@@ -1,4 +1,4 @@
-class usbguard::ipc_acl_file (
+define usbguard::ipc_acl_file (
   String $user = $title,
   String $devices = "",
   String $policy = "",

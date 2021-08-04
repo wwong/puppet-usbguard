@@ -80,7 +80,4 @@ class usbguard(
       }
     }
   }
-  if $daemon_ipc_users != undef {
-    create_resources('::usbguard::ipc_acl_file', daemon_ipc_users)
-  }
 }

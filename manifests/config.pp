@@ -42,10 +42,15 @@ class usbguard::config {
     }
   }
   file { $::usbguard::daemon_ipc_access_control_files_dir:
-    ensure => 'directory',
-    owner  => 'root',
-    group  => 'root',
-    mode   => '0555',
-    purge  => true,
+    ensure  => 'directory',
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0555',
+    purge   => true,
+    recurse => true,
+  }
+
+  if $::usbguard::daemon_ipc_users != undef {
+    create_resources('::usbguard::ipc_acl_file', $::usbguard::daemon_ipc_users)
   }
 }
