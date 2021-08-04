@@ -16,6 +16,7 @@ class usbguard::config {
     ImplicitPolicyTarget=${::usbguard::daemon_implicit_policy_target}
     PresentDevicePolicy=${::usbguard::daemon_present_device_policy}
     PresentControllerPolicy=${::usbguard::daemon_present_controller_policy}
+    IPCAccessControlFiles=${::usbguard::daemon_ipc_access_control_files_dir}
     IPCAllowedUsers=${ipc_allowed_users}
     IPCAllowedGroups=${ipc_allowed_groups}
     DeviceRulesWithPort=${::usbguard::daemon_device_rules_with_port}
@@ -39,5 +40,12 @@ class usbguard::config {
       group  => 'root',
       mode   => '0600',
     }
+  }
+  file { $::usbguard::daemon_ipc_access_control_files_dir:
+    ensure => 'directory',
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0555',
+    purge  => true,
   }
 }

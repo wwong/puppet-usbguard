@@ -17,6 +17,8 @@
 #   usbguard-daemon.conf
 # @param daemon_implicit_policy_target ImplicitPolicyTarget setting of
 #   usbguard-daemon.conf
+# @param daemon_ipc_access_control_files_dir IPCAccessControlFiles
+#   setting of usbguard-daemon.conf
 # @param daemon_ipc_allowed_groups  IPCAllowedGroups setting of
 #   usbguard-daemon.conf
 # @param daemon_ipc_allowed_users  IPCAllowedUsers setting of
@@ -57,9 +59,11 @@ class usbguard(
   Enum['allow','block','reject','keep','apply-policy'] $daemon_present_controller_policy = 'keep',
   Enum['allow','block','reject','keep','apply-policy'] $daemon_present_device_policy= 'apply-policy',
   String $daemon_rule_file = '/etc/usbguard/rules-managed-by-puppet.conf',
+  String $daemon_ipc_access_control_files_dir = '/etc/usbguard/IPCAccessControl.d',
 
   # rules to provide by hiera/lookup or as class param
   Optional[Array[String]] $rules = undef,
+  Optional[Hash[String, Hash[String, String, 0, 4]]] $daemon_ipc_users = undef,
 ) {
   contain ::usbguard::install
   contain ::usbguard::config
@@ -70,8 +74,13 @@ class usbguard(
   ~> Class['::usbguard::service']
 
   if $rules != undef {
-    $rules.each |$rule| {
-      ::usbguard::rule { $rule: }
+    $rules.each |$order, $rule| {
+      ::usbguard::rule { $rule:
+        order => sprintf("%03d", $order),
+      }
     }
+  }
+  if $daemon_ipc_users != undef {
+    create_resources('::usbguard::ipc_acl_file', daemon_ipc_users)
   }
 }
